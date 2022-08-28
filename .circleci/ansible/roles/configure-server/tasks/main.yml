@@ -15,6 +15,9 @@
     name:
       - nodejs
       - npm
-      - pm2
       - python3
+      
+  - name: "Install pm2"
+    become: true
+    shell: npm install pm2 -g
 
