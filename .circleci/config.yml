@@ -156,7 +156,7 @@ jobs:
                 aws ec2 describe-instances \
                 \
                         --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                     --filter "Name=instance-state-code,Values=running" --output text >> inventory.txt
+                     --filter "Name=instance-state-name,Values=running" --output text >> inventory.txt
                 cat inventory.txt
           
       - run:
