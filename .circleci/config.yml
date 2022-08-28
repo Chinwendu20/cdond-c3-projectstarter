@@ -189,6 +189,8 @@ jobs:
           name: Install dependencies
           command: |
               apk add --update --no-cache openssh ansible tar gzip
+              pip3 install awscli 
+              rm -rf /var/cache/apk/*
       - run:
           name: Configure server
           command: |
