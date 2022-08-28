@@ -160,7 +160,7 @@ jobs:
       - run:
           name: Installing tar
           command: |
-            apk add --no-cache tar
+            apt install  tar
       - persist_to_workspace:
           root: ~/
           paths:
