@@ -156,6 +156,11 @@ jobs:
                         --query 'Reservations[*].Instances[*].PublicIpAddress' \
                       --filters "Name=tag:Project,Values=udacity" \
                       --output text >> inventory.txt
+          
+      - run:
+          name: Installing tar
+          command: |
+            apk add --no-cache tar
       - persist_to_workspace:
           root: ~/
           paths:
