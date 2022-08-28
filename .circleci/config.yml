@@ -188,7 +188,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-              apk add --update --no-cache openssh ansible tar gzip awscli
+              apk add --update --no-cache openssh ansible tar gzip
       - run:
           name: Configure server
           command: |
