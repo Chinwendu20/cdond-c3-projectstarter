@@ -222,9 +222,6 @@ jobs:
       - run:
           name: Send migration results to kvdb
           command: |
-              pwd
-              ls
-              cat ${CIRCLE_WORKFLOW_ID:0:7}
               if grep -q "has been executed successfully." backend/migrations_dump.txt
               then
               # If you are using kvdb.io, generate the bucket ID "9GE4jRtKznmVKRfvdBABBe" in your local terminal first
