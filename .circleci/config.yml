@@ -222,33 +222,43 @@ jobs:
       - run:
           name: Send migration results to memstash
           command: |
-              if grep -q "has been executed successfully." migrations_dump.txt
+              pwd
+              if grep -q "has been executed successfully." backend/migrations_dump.txt
               then
               # If you are using kvdb.io, generate the bucket ID "9GE4jRtKznmVKRfvdBABBe" in your local terminal first
               curl https://kvdb.io/NBMoFYPbLjKsGh4MyFPXzR/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
               fi
      # Here's where you will add some code to rollback on failure      
 
-#   deploy-frontend:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Get backend url
-#           command: |
-#             # your code here
-#             export API_URL="http://${BACKEND_IP}:3030"
-#             echo "${API_URL}"
-#       - run:
-#           name: Deploy frontend objects
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure      
+  deploy-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+      # Docker image here that supports AWS CLI
+    steps:
+      # Checkout code from git
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+            cd frontend
+            npm install
+      - run:
+          name: Get backend url
+          command: |
+            # your code here
+            export API_URL="http://${aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                     --filter "Name=tag:Name,Values=${CIRCLE_WORKFLOW_ID:0:7}" --output text}:3030"
+            echo "${API_URL}"
+            npm run build
+      - run:
+          name: Deploy frontend objects
+          command: |
+            # your code here
+      - destroy-environment:
+          workflow_id:
+                ${CIRCLE_WORKFLOW_ID:0:7}
+      # Here's where you will add some code to rollback on failure      
                     
 #   deploy-backend:
 #     docker:
