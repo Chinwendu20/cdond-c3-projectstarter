@@ -229,7 +229,7 @@ jobs:
           name: Send migration results to kvdb
           command: |
               echo ${CIRCLE_WORKFLOW_ID:0:7}
-              if grep -q "migrations" backend/migrations_dump.txt
+              if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
               then
               curl https://kvdb.io/6YVb82cT8ru7BMuKPGtVpt/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
               fi
@@ -249,7 +249,7 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
-            apt install awscli
+            sudo apt install awscli
       - run:
           name: Get backend url
           command: |
@@ -377,8 +377,8 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
