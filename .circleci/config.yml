@@ -293,11 +293,27 @@ jobs:
             name: Install dependencies
             command: |
               # your code here
+              apk add --update --no-cache openssh ansible tar gzip
+              pip3 install awscli 
+              rm -rf /var/cache/apk/*
         - run:
             name: Deploy backend
             command: |
               # your code here
-      # Here's where you will add some code to rollback on failure  
+              cd backend
+              npm i
+              npm run build
+              cd ..
+              # Zip the directory
+              tar -C backend -czvf artifact.tar.gz .
+              cd .circleci/ansible
+              echo "Contents  of the inventory.txt file is -------"
+              cat inventory.txt
+              ansible-playbook -i inventory.txt deploy-backend.yml
+      # Here's where you will add some code to rollback on failure
+        - destroy-environment:
+            workflow_id:
+                  ${CIRCLE_WORKFLOW_ID:0:7}  
 
 #   smoke-test:
 #     docker:
@@ -381,8 +397,8 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
