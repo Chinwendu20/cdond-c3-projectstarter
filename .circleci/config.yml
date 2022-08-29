@@ -293,7 +293,7 @@ jobs:
             name: Install dependencies
             command: |
               # your code here
-              apk add --update --no-cache openssh ansible tar gzip
+              apk add --update --no-cache openssh ansible tar gzip nodejs npm
               pip3 install awscli 
               rm -rf /var/cache/apk/*
         - run:
