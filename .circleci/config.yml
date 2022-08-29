@@ -249,6 +249,8 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
+            sudo apt update
+            sudo apt upgrade
             sudo apt install awscli
       - run:
           name: Get backend url
