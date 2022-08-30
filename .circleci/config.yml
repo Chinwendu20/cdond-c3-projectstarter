@@ -31,7 +31,7 @@ commands:
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             export SUCCESS=$(curl  https://kvdb.io/6YVb82cT8ru7BMuKPGtVpt/migration_<< parameters.workflow_id >>) 
             echo $SUCCESS
-            if(( $SUCCESS == 1 )); 
+            if [ $SUCCESS == 1 ]; 
             then
             cd ~/project/backend
             npm install
@@ -324,7 +324,7 @@ jobs:
   smoke-test:
     docker:
       # Lightweight Docker image
-       - image: python:3.7-alpine3.11 
+       - image: amazon/aws-cli 
     steps:
       # Checkout code from git
       - checkout
@@ -332,9 +332,7 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
-            apk add --update --no-cache curl
-            pip3 install awscli 
-              rm -rf /var/cache/apk/*
+            yum install curl
       - run:
           name: Get backend url
           command: |
