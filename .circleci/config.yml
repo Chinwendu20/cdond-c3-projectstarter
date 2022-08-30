@@ -332,7 +332,7 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
-            yum install curl
+            yum install curl nodejs
       - run:
           name: Get backend url
           command: |
