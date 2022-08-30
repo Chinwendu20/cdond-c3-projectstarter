@@ -335,12 +335,13 @@ jobs:
           name: Get backend url
           command: |
             # your code here
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                     --filter "Name=tag:Name,Values=${CIRCLE_WORKFLOW_ID:0:7}" --output text)
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                     --filter "Name=tag:Name,Values=${CIRCLE_WORKFLOW_ID:0:7}" --output text >> tmp
       - run:
           name: Backend smoke test.
           command: |
             # your code here
+            export BACKEND_IP = $(cat tmp)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
