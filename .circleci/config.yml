@@ -94,6 +94,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [frontend-build]
       - run: 
           command: |
               cd frontend
@@ -105,6 +107,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
       - run: 
           command: |
               cd backend
@@ -208,7 +212,6 @@ jobs:
           command: |
               apk add --update --no-cache openssh ansible tar gzip
               pip3 install awscli 
-              rm -rf /var/cache/apk/*
       - run:
           name: Configure server
           command: |
