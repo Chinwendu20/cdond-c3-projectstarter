@@ -227,14 +227,14 @@ jobs:
       # Docker image here that supports NodeJS
     steps:
       # Checkout code from git
-      - create-dotenv
-      - checkout
       - run:
           name: Install dependencies
           command: |
             sudo apt update
             sudo apt upgrade
             sudo apt install awscli
+      - checkout
+      - create-dotenv
       - restore_cache:
           keys: [backend-build]
       - run:
