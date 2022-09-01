@@ -12,7 +12,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-                aws s3 rm s3://frontend-<< parameters.workflow_id >> --recursive
+                aws s3 rm s3://udapeople-<< parameters.workflow_id >> --recursive
                 aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.workflow_id >>
                 aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
 
@@ -397,26 +397,29 @@ jobs:
             aws cloudformation \
               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text > workflow_id.txt
-      - run:
-          name: Update cloudfront distribution
-          command: |
-            # your code here
-            aws cloudformation deploy \
-            --template-file .circleci/files/cloudfront.yml \
-            --stack-name InitialStack \
-            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --tags project=udapeople
+              cat workflow_id.txt
+              pwd
+              ls
+      # - run:
+      #     name: Update cloudfront distribution
+      #     command: |
+      #       # your code here
+      #       aws cloudformation deploy \
+      #       --template-file .circleci/files/cloudfront.yml \
+      #       --stack-name InitialStack \
+      #       --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+      #       --tags project=udapeople
       - persist_to_workspace:
-          root:  ~/
+          root: ~/
           paths:
             -  workflow_id.txt
       # Here's where you will add some code to rollback on failure
-      - revert-migrations:
-          workflow_id:
-                ${CIRCLE_WORKFLOW_ID:0:7} 
-      - destroy-environment:
-            workflow_id:
-                  ${CIRCLE_WORKFLOW_ID:0:7}   
+      # - revert-migrations:
+      #     workflow_id:
+      #           ${CIRCLE_WORKFLOW_ID:0:7} 
+      # - destroy-environment:
+      #       workflow_id:
+      #             ${CIRCLE_WORKFLOW_ID:0:7}   
 
   cleanup:
       docker:
@@ -454,32 +457,32 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update
+          # requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
