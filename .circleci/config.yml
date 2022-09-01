@@ -392,6 +392,12 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_10.x | bash -
             yum install -y nodejs
       - run:
+          name: Obtain old workflow ID
+          command: |
+            aws cloudformation \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text > workflow_id.txt
+      - run:
           name: Update cloudfront distribution
           command: |
             # your code here
@@ -400,6 +406,10 @@ jobs:
             --stack-name InitialStack \
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
+      - persist_to_workspace:
+          root:  ~/
+          paths:
+            -  workflow_id.txt
       # Here's where you will add some code to rollback on failure
       - revert-migrations:
           workflow_id:
@@ -415,8 +425,10 @@ jobs:
       steps:
         # Checkout code from git
         - checkout
+        - attach_workspace:
+            at: ~/
         - run:
-            name: Get old stack workflow id
+            name: Get successfully created stacks
             command: |
               # your code here            
               export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
@@ -425,9 +437,7 @@ jobs:
         - run:
             name: Remove old stacks and files
             command: |
-              export OldWorkflowID=$(aws cloudformation \
-              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-              --no-paginate --output text)
+              export OldWorkflowID=$(cat ~/workflow_id.txt ) 
               echo OldWorkflowID: "${OldWorkflowID}"
               echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
               if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID:10:17}" ]]
