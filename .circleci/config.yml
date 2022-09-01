@@ -400,26 +400,26 @@ jobs:
               cat ~/workflow_id.txt
               pwd
               ls
-      # - run:
-      #     name: Update cloudfront distribution
-      #     command: |
-      #       # your code here
-      #       aws cloudformation deploy \
-      #       --template-file .circleci/files/cloudfront.yml \
-      #       --stack-name InitialStack \
-      #       --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-      #       --tags project=udapeople
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            # your code here
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name InitialStack \
+            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople
       - persist_to_workspace:
           root: ~/
           paths:
             - workflow_id.txt
       # Here's where you will add some code to rollback on failure
-      # - revert-migrations:
-      #     workflow_id:
-      #           ${CIRCLE_WORKFLOW_ID:0:7} 
-      # - destroy-environment:
-      #       workflow_id:
-      #             ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations:
+          workflow_id:
+                ${CIRCLE_WORKFLOW_ID:0:7} 
+      - destroy-environment:
+            workflow_id:
+                  ${CIRCLE_WORKFLOW_ID:0:7}   
 
   cleanup:
       docker:
@@ -461,32 +461,32 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update
-          # requires: [smoke-test]
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
